@@ -62,9 +62,6 @@ export default function Login() {
           <button className="btn ghost" type="button" onClick={onLogout}>Logout</button>
 
           {msg && <div className="alert">{msg}</div>}
-          {/* <div className="hint">
-            إذا ظهر <b>auth/api-key-not-valid</b> → المشكلة من <b>.env</b> أو من مشروع Firebase مختلف.
-          </div> */}
         </form>
       </div>
     </div>

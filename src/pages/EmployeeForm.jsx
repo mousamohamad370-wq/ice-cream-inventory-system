@@ -138,7 +138,7 @@ export default function EmployeeForm() {
 
             <div>
               <label className="label">Employee Name (اسم الموظف)</label>
-              <input className="input" value={employeeName} onChange={(e) => setEmployeeName(e.target.value)} placeholder="محمد" />
+              <input className="input" value={employeeName} onChange={(e) => setEmployeeName(e.target.value)} placeholder="Enter employee name" />
             </div>
 
             <div>
