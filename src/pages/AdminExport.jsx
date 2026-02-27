@@ -74,6 +74,20 @@ export default function AdminExport() {
           value={toDate}
           onChange={(e) => setToDate(e.target.value)}
         />
+        <div
+  style={{
+    marginTop: "12px",
+    padding: "10px 14px",
+    borderRadius: "8px",
+    fontSize: "13px",
+    fontWeight: "500",
+    backgroundColor: "#fff4f4",
+    color: "#c62828",
+    border: "1px solid #f5c2c2"
+  }}
+>
+  الرجاء عدم إدخال مدة أكثر من شهر
+</div>
 
         <button className="btn" onClick={exportExcel}>
           Download Excel

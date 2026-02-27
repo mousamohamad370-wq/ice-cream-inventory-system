@@ -151,7 +151,7 @@ export default function EmployeeForm() {
             </div>
 
             <div>
-              <label className="label">Cream (Kg) - قشطة</label>
+              <label className="label">Ashta(Kg) - قشطة</label>
               <input className="input" value={cream} onChange={(e) => setCream(e.target.value)} />
             </div>
             <div>
@@ -165,17 +165,17 @@ export default function EmployeeForm() {
             </div>
 
             <div>
-              <label className="label">Free Regular (Kg)</label>
+              <label className="label">Free Regular (عادي مجاني ) (Kg)</label>
               <input className="input" value={freeRegular} onChange={(e) => setFreeRegular(e.target.value)} />
             </div>
 
             <div>
-              <label className="label">Free Cream (Kg)</label>
+              <label className="label">Free Cream (قشطة مجاني ) (Kg)</label>
               <input className="input" value={freeCream} onChange={(e) => setFreeCream(e.target.value)} />
             </div>
 
             <div>
-              <label className="label">Notes</label>
+              <label className="label">Notes(ملاحظات)</label>
               <input className="input" value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="free 2 kilos..." />
             </div>
           </div>
