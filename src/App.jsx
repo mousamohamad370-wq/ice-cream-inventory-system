@@ -18,7 +18,15 @@ export default function App() {
           </ProtectedRoute>
         }
       />
-      <Route path="/admin/export" element={<ProtectedRoute><AdminExport /></ProtectedRoute>} />
+
+      <Route
+        path="/admin/export"
+        element={
+          <ProtectedRoute>
+            <AdminExport />
+          </ProtectedRoute>
+        }
+      />
 
       <Route
         path="/admin/assign"
@@ -28,14 +36,6 @@ export default function App() {
           </ProtectedRoute>
         }
       />
-      <Route
-  path="/admin/export"
-  element={
-    <ProtectedRoute>
-      <AdminExport />
-    </ProtectedRoute>
-  }
-/>
 
       <Route path="/" element={<Navigate to="/login" replace />} />
       <Route path="*" element={<Navigate to="/login" replace />} />
