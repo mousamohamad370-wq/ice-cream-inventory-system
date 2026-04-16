@@ -1,44 +1,96 @@
-import { Routes, Route, Navigate } from "react-router-dom";
-import Login from "./pages/Login";
-import EmployeeForm from "./pages/EmployeeForm";
-import AdminAssign from "./pages/AdminAssign";
+import { useEffect } from "react";
+import { Navigate, Route, Routes } from "react-router-dom";
+
 import ProtectedRoute from "./components/ProtectedRoute";
+
+import Login from "./pages/Login";
+import PublicMenu from "./pages/PublicMenu";
+
+import EmployeeForm from "./pages/EmployeeForm";
+import IncomingDelivery from "./pages/IncomingDelivery";
+import TalabiyahHelper from "./pages/TalabiyahHelper";
+
+import AdminAssign from "./pages/AdminAssign";
 import AdminExport from "./pages/AdminExport";
+import AdminMenu from "./pages/AdminMenu";
+
+function ProtectedPage({ children }) {
+  return <ProtectedRoute>{children}</ProtectedRoute>;
+}
 
 export default function App() {
+  useEffect(() => {
+    document.documentElement.lang = "ar";
+    document.documentElement.dir = "rtl";
+    document.body.setAttribute("dir", "rtl");
+    document.body.classList.add("rtl");
+
+    return () => {
+      document.body.classList.remove("rtl");
+    };
+  }, []);
+
   return (
-    <Routes>
-      <Route path="/login" element={<Login />} />
+    <div className="app-root" dir="rtl" lang="ar">
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path="/menu" element={<PublicMenu />} />
 
-      <Route
-        path="/employee"
-        element={
-          <ProtectedRoute>
-            <EmployeeForm />
-          </ProtectedRoute>
-        }
-      />
+        <Route
+          path="/employee"
+          element={
+            <ProtectedPage>
+              <EmployeeForm />
+            </ProtectedPage>
+          }
+        />
+        <Route
+          path="/employee/incoming"
+          element={
+            <ProtectedPage>
+              <IncomingDelivery />
+            </ProtectedPage>
+          }
+        />
+        <Route
+          path="/employee/order"
+          element={
+            <ProtectedPage>
+              <TalabiyahHelper />
+            </ProtectedPage>
+          }
+        />
 
-      <Route
-        path="/admin/export"
-        element={
-          <ProtectedRoute>
-            <AdminExport />
-          </ProtectedRoute>
-        }
-      />
+        <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
+        <Route
+          path="/admin/dashboard"
+          element={
+            <ProtectedPage>
+              <AdminExport />
+            </ProtectedPage>
+          }
+        />
+        <Route
+          path="/admin/menu"
+          element={
+            <ProtectedPage>
+              <AdminMenu />
+            </ProtectedPage>
+          }
+        />
+        <Route
+          path="/admin/assign"
+          element={
+            <ProtectedPage>
+              <AdminAssign />
+            </ProtectedPage>
+          }
+        />
+        <Route path="/admin/export" element={<Navigate to="/admin/dashboard" replace />} />
 
-      <Route
-        path="/admin/assign"
-        element={
-          <ProtectedRoute>
-            <AdminAssign />
-          </ProtectedRoute>
-        }
-      />
-
-      <Route path="/" element={<Navigate to="/login" replace />} />
-      <Route path="*" element={<Navigate to="/login" replace />} />
-    </Routes>
+        <Route path="/" element={<Navigate to="/login" replace />} />
+        <Route path="*" element={<Navigate to="/login" replace />} />
+      </Routes>
+    </div>
   );
 }

@@ -1,29 +1,38 @@
 import * as XLSX from "xlsx";
+import {
+  safeBranchName,
+  buildCycleRows,
+  calcTheoreticalPricePerKilo,
+} from "./inventoryLogic";
 
 const COLS = [
-  "Date",
+  "Cycle Label",
+  "Cycle Status",
+  "Manager Note",
+  "From Date",
+  "To Date",
   "Branch",
   "Employee",
-  "Regular Total (Kg)",
-  "Diet Total (Kg)",
-  "Cream Total (Kg)",
-  "Avocado Total (Kg)",
-  "Merrycream (Qty)",
-  "Merrycream (Kg)",
-  "Free Regular (Kg)",
-  "Free Cream (Kg)",
-  "Net Regular (Kg)",
-  "Net Cream/Avocado (Kg)",
-  "Total KG",
-  "% Achta",
+  "Inventory Docs Used",
+  "Incoming Docs Used",
+  "Previous Total (Kg)",
+  "Incoming Total (Kg)",
+  "Current Total (Kg)",
+  "Sold Total (Kg)",
+  "Regular Sold (Kg)",
+  "Diet Sold (Kg)",
+  "Ashta+Avocado Sold (Kg)",
+  "Merry Cream Sold (Kg)",
+  "Regular Current (Kg)",
+  "Diet Current (Kg)",
+  "Ashta+Avocado Current (Kg)",
+  "Merry Cream Current (Kg)",
+  "% Ashta+Avocado",
   "Price per kilo theor",
-  "Price per kilo act",
+  "Free Regular (Kg)",
+  "Free Ashta+Avocado (Kg)",
   "Notes",
 ];
-
-function safeBranchName(name) {
-  return (name || "Unknown").toString().trim() || "Unknown";
-}
 
 function safeSheetName(name) {
   return (
@@ -34,212 +43,190 @@ function safeSheetName(name) {
   );
 }
 
-function n(v) {
-  const num = Number(v);
-  return Number.isFinite(num) ? num : 0;
+function excelCycleStatus(row) {
+  if (row?.cycleStatus === "completed") return "COMPLETED";
+  if (row?.cycleStatus === "open_cycle") return "OPEN";
+  if (row?.cycleStatus === "first_only") return "FIRST_ONLY";
+  return String(row?.cycleStatus || "").toUpperCase() || "UNKNOWN";
 }
 
-function round2(x) {
-  return Math.round((x + Number.EPSILON) * 100) / 100;
-}
-
-/**
- * يدعم النظام الجديد والقديم:
- * - الجديد: الحقول المحسوبة القادمة من EmployeeForm الجديد
- * - القديم: regular / diet / cream / avocado
- */
-function normalizeInventoryRow(it) {
-  const merryQty = n(it.merryQty);
-  const merryKg = round2(merryQty * 0.22);
-
-  const freeRegular = n(it.freeRegular);
-  const freeCream = n(it.freeCream);
-
-  // النظام الجديد
-  const hasNewShape =
-    "regularBigTotalKg" in (it || {}) ||
-    "regularSmallTotalKg" in (it || {}) ||
-    "dietTotalKg" in (it || {}) ||
-    "dietBigTotalKg" in (it || {}) ||
-    "creamTotalKg" in (it || {}) ||
-    "avocadoTotalKg" in (it || {});
-
-  if (hasNewShape) {
-    const regularOnlyKg = round2(
-      n(it.regularBigTotalKg) + n(it.regularSmallTotalKg)
-    );
-
-    const dietOnlyKg = round2(
-      n(it.dietTotalKg) + n(it.dietBigTotalKg)
-    );
-
-    const creamOnlyKg = round2(n(it.creamTotalKg));
-    const avocadoOnlyKg = round2(n(it.avocadoTotalKg));
-
-    const netRegularKg = round2(regularOnlyKg + merryKg - freeRegular);
-    const netCreamAvocadoKg = round2(creamOnlyKg + avocadoOnlyKg - freeCream);
-    const totalKg = round2(netRegularKg + dietOnlyKg + netCreamAvocadoKg);
-    const pctAchta = totalKg === 0 ? 0 : round2((creamOnlyKg / totalKg) * 100);
-
-    return {
-      date: it.dateStr || "",
-      branch: safeBranchName(it.branchName),
-      employee: it.employeeName || "",
-      regularOnlyKg,
-      dietOnlyKg,
-      creamOnlyKg,
-      avocadoOnlyKg,
-      merryQty,
-      merryKg,
-      freeRegular,
-      freeCream,
-      netRegularKg,
-      netCreamAvocadoKg,
-      totalKg,
-      pctAchta,
-      notes: it.notes || "",
-    };
-  }
-
-  // النظام القديم
-  const regularOnlyKg = round2(n(it.regular));
-  const dietOnlyKg = round2(n(it.diet));
-  const creamOnlyKg = round2(n(it.cream));
-  const avocadoOnlyKg = round2(n(it.avocado));
-
-  const netRegularKg = round2(regularOnlyKg + merryKg - freeRegular);
-  const netCreamAvocadoKg = round2(creamOnlyKg + avocadoOnlyKg - freeCream);
-  const totalKg = round2(netRegularKg + dietOnlyKg + netCreamAvocadoKg);
-  const pctAchta = totalKg === 0 ? 0 : round2((creamOnlyKg / totalKg) * 100);
-
+function normalizeExcelRow(row) {
   return {
-    date: it.dateStr || "",
-    branch: safeBranchName(it.branchName),
-    employee: it.employeeName || "",
-    regularOnlyKg,
-    dietOnlyKg,
-    creamOnlyKg,
-    avocadoOnlyKg,
-    merryQty,
-    merryKg,
-    freeRegular,
-    freeCream,
-    netRegularKg,
-    netCreamAvocadoKg,
-    totalKg,
-    pctAchta,
-    notes: it.notes || "",
+    cycleLabel: row.cycleLabel || "",
+    cycleStatus: excelCycleStatus(row),
+    managerNote: row.managerNote || "",
+    fromDate: row.openingDate || row.dateStr || "-",
+    toDate: row.closingDate || "-",
+    branch: row.branch || "",
+    employee: row.employee || "",
+    inventoryDocsUsed: row.inventoryDocsUsed ?? "",
+    incomingDocsUsed: row.incomingDocs ?? "",
+    previousTotalKg: row.previousTotalKg,
+    incomingTotalKg: row.incomingTotalKg,
+    currentTotalKg: row.currentTotalKg,
+    soldTotalKg: row.soldTotalKg,
+    soldRegularKg: row.soldRegularKg,
+    soldDietKg: row.soldDietKg,
+    soldAshtaAvocadoKg: row.soldAshtaAvocadoKg,
+    soldMerryKg: row.soldMerryKg,
+    regularCurrentKg: row.regularBaseCurrentKg,
+    dietCurrentKg: row.dietTotalKg,
+    ashtaAvocadoCurrentKg: row.ashtaAvocadoTotalKg,
+    merryCurrentKg: row.merryKg,
+    pctAshtaAvocado: row.pctAshtaAvocado,
+    freeRegularKg: row.freeRegularKg,
+    freeAshtaAvocadoKg: row.freeAshtaAvocadoKg,
+    notes: row.notes || "",
   };
 }
 
-export function buildWorkbookFromInventory({ groupedByBranch, fromDate, toDate }) {
-  const wb = XLSX.utils.book_new();
+function applyNumberFormats(ws) {
+  const numericColumns = [
+    "J",
+    "K",
+    "L",
+    "M",
+    "N",
+    "O",
+    "P",
+    "Q",
+    "R",
+    "S",
+    "T",
+    "U",
+    "V",
+    "W",
+    "X",
+    "Y",
+    "Z",
+  ];
 
-  const branches = Object.keys(groupedByBranch || {});
-  if (branches.length === 0) {
+  const ref = ws["!ref"];
+  if (!ref) return;
+
+  const range = XLSX.utils.decode_range(ref);
+
+  for (let rowIndex = range.s.r; rowIndex <= range.e.r; rowIndex += 1) {
+    numericColumns.forEach((col) => {
+      const cell = ws[`${col}${rowIndex + 1}`];
+      if (cell && cell.t === "n") {
+        cell.z = "0.00";
+      }
+    });
+  }
+}
+
+export function buildWorkbookFromInventory({
+  groupedByBranch,
+  fromDate,
+  toDate,
+  ashtaPrice = 22.2,
+  regularPrice = 15,
+}) {
+  const wb = XLSX.utils.book_new();
+  const branchKeys = Object.keys(groupedByBranch || {});
+
+  if (branchKeys.length === 0) {
     const ws = XLSX.utils.aoa_to_sheet([COLS]);
-    ws["!rtl"] = false;
+    ws["!rtl"] = true;
     XLSX.utils.book_append_sheet(wb, ws, "Empty");
-    wb.Workbook = { CalcPr: { fullCalcOnLoad: true } };
     return wb;
   }
 
-  branches.forEach((branchRaw) => {
+  branchKeys.forEach((branchRaw) => {
     const branchName = safeBranchName(branchRaw);
+    const cycleRows = buildCycleRows(groupedByBranch[branchRaw] || [], branchName).rows.map(
+      normalizeExcelRow
+    );
 
-    const items = (groupedByBranch[branchRaw] || [])
-      .slice()
-      .sort((a, b) => (a.dateStr || "").localeCompare(b.dateStr || ""));
+    const aoa = [
+      ["Ashta+Avocado Price", ashtaPrice],
+      ["Regular Price", regularPrice],
+      ["Branch", branchName],
+      ["Date Range", `${fromDate} -> ${toDate}`],
+      [],
+      COLS,
+    ];
 
-    const aoa = [];
-
-    // إعدادات قابلة للتعديل من المدير
-    aoa.push(["Cream Price", 22.2]); // A1,B1
-    aoa.push(["Regular Price", 15]); // A2,B2
-    aoa.push([]);
-    aoa.push(COLS); // الصف الرابع
-
-    items.forEach((it, idx) => {
-      const rowNum = idx + 5; // أول سطر بيانات
-
-      const row = normalizeInventoryRow(it);
+    cycleRows.forEach((row) => {
+      const price =
+        row.soldTotalKg != null
+          ? calcTheoreticalPricePerKilo({
+              ashtaPrice,
+              regularPrice,
+              pct: row.pctAshtaAvocado,
+            })
+          : "";
 
       aoa.push([
-        row.date,               // A
-        row.branch,             // B
-        row.employee,           // C
-        row.regularOnlyKg,      // D
-        row.dietOnlyKg,         // E
-        row.creamOnlyKg,        // F
-        row.avocadoOnlyKg,      // G
-        row.merryQty,           // H
-        row.merryKg,            // I
-        row.freeRegular,        // J
-        row.freeCream,          // K
-        row.netRegularKg,       // L
-        row.netCreamAvocadoKg,  // M
-        row.totalKg,            // N
-        row.pctAchta,           // O
-        { t: "n", f: `=(($B$1*O${rowNum})/100)+$B$2` }, // P
-        "",                     // Q manual
-        row.notes,              // R
+        row.cycleLabel,
+        row.cycleStatus,
+        row.managerNote,
+        row.fromDate,
+        row.toDate,
+        row.branch,
+        row.employee,
+        row.inventoryDocsUsed,
+        row.incomingDocsUsed,
+        row.previousTotalKg,
+        row.incomingTotalKg,
+        row.currentTotalKg,
+        row.soldTotalKg,
+        row.soldRegularKg,
+        row.soldDietKg,
+        row.soldAshtaAvocadoKg,
+        row.soldMerryKg,
+        row.regularCurrentKg,
+        row.dietCurrentKg,
+        row.ashtaAvocadoCurrentKg,
+        row.merryCurrentKg,
+        row.pctAshtaAvocado,
+        price,
+        row.freeRegularKg,
+        row.freeAshtaAvocadoKg,
+        row.notes,
       ]);
     });
 
-    // سطر مجموع في النهاية
-    const firstDataRow = 5;
-    const lastDataRow = items.length + 4;
-
-  
+    if (aoa.length === 6) {
+      aoa.push(["لا توجد بيانات كافية ضمن الفترة المحددة"]);
+    }
 
     const ws = XLSX.utils.aoa_to_sheet(aoa);
-
-    ws["!rtl"] = false;
+    ws["!rtl"] = true;
 
     ws["!cols"] = [
-      { wch: 12 }, // Date
-      { wch: 16 }, // Branch
-      { wch: 18 }, // Employee
-      { wch: 18 }, // Regular Total
-      { wch: 16 }, // Diet Total
-      { wch: 16 }, // Cream Total
-      { wch: 16 }, // Avocado Total
-      { wch: 18 }, // Merry Qty
-      { wch: 16 }, // Merry Kg
-      { wch: 18 }, // Free Regular
-      { wch: 16 }, // Free Cream
-      { wch: 18 }, // Net Regular
-      { wch: 22 }, // Net Cream/Avocado
-      { wch: 14 }, // Total KG
-      { wch: 10 }, // % Achta
-      { wch: 20 }, // Price theor
-      { wch: 18 }, // Price act
-      { wch: 30 }, // Notes
+      { wch: 16 },
+      { wch: 14 },
+      { wch: 55 },
+      { wch: 12 },
+      { wch: 12 },
+      { wch: 16 },
+      { wch: 18 },
+      { wch: 18 },
+      { wch: 18 },
+      { wch: 18 },
+      { wch: 18 },
+      { wch: 18 },
+      { wch: 18 },
+      { wch: 18 },
+      { wch: 16 },
+      { wch: 24 },
+      { wch: 18 },
+      { wch: 18 },
+      { wch: 18 },
+      { wch: 18 },
+      { wch: 18 },
+      { wch: 18 },
+      { wch: 20 },
+      { wch: 18 },
+      { wch: 24 },
+      { wch: 30 },
     ];
 
-    // تنسيق الأرقام
-    const range = XLSX.utils.decode_range(ws["!ref"]);
-    for (let R = range.s.r; R <= range.e.r; R++) {
-      ["D", "E", "F", "G", "I", "J", "K", "L", "M", "N", "O", "P"].forEach((col) => {
-        const cell = ws[`${col}${R + 1}`];
-        if (cell && (cell.t === "n" || cell.f)) {
-          cell.z = "0.00";
-        }
-      });
-    }
-
-    // H = qty
-    for (let R = range.s.r; R <= range.e.r; R++) {
-      const cell = ws[`H${R + 1}`];
-      if (cell && cell.t === "n") {
-        cell.z = "0";
-      }
-    }
-
+    applyNumberFormats(ws);
     XLSX.utils.book_append_sheet(wb, ws, safeSheetName(branchName));
   });
-
-  wb.Workbook = { CalcPr: { fullCalcOnLoad: true } };
 
   wb.Props = {
     Title: "IceCream Inventory",

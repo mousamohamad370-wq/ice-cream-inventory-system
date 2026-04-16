@@ -1,0 +1,631 @@
+.login-page-shell {
+  min-height: 100vh;
+}
+
+.login-page-card {
+  width: 460px;
+  max-width: 100%;
+  margin: 0 auto;
+  position: relative;
+  overflow: hidden;
+  direction: rtl;
+  text-align: right;
+  border-radius: 28px;
+  padding: 24px 22px 20px;
+  background:
+    radial-gradient(circle at top right, rgba(255, 255, 255, 0.72), transparent 24%),
+    linear-gradient(180deg, rgba(238, 243, 252, 0.96), rgba(224, 232, 246, 0.94));
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  box-shadow:
+    0 26px 60px rgba(74, 85, 104, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.login-page-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.login-subtitle {
+  margin: 6px 0 0;
+  text-align: center;
+  line-height: 1.8;
+}
+
+/* KOALA */
+.login-koala-block {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 12px;
+  padding-top: 2px;
+}
+
+.koala {
+  position: relative;
+  width: 150px;
+  height: 150px;
+  transition: transform 0.35s ease;
+}
+
+.koala:hover {
+  transform: translateY(-2px);
+}
+
+.koala-ears {
+  position: absolute;
+  inset: 0;
+}
+
+.koala-ear {
+  position: absolute;
+  top: 10px;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #b7bcc4 0%, #8a9099 68%, #737983 100%);
+  box-shadow: inset 0 -4px 8px rgba(0, 0, 0, 0.12);
+}
+
+.koala-ear::after {
+  content: "";
+  position: absolute;
+  inset: 11px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #f6d7df 0%, #e5b8c3 100%);
+  opacity: 0.9;
+}
+
+.koala-ear-left {
+  left: 10px;
+}
+
+.koala-ear-right {
+  right: 10px;
+}
+
+.koala-face {
+  position: absolute;
+  left: 50%;
+  bottom: 4px;
+  transform: translateX(-50%);
+  width: 118px;
+  height: 118px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 28%, #dce1e7 0%, #b3bac3 58%, #9097a1 100%);
+  box-shadow:
+    inset 0 -8px 14px rgba(0, 0, 0, 0.12),
+    0 10px 26px rgba(0, 0, 0, 0.12);
+}
+
+.koala-face::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 58%;
+  transform: translateX(-50%);
+  width: 72px;
+  height: 48px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 35%, #f8fafc 0%, #e8edf2 100%);
+  opacity: 0.92;
+}
+
+.koala-eyes {
+  position: absolute;
+  top: 38px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 58px;
+  display: flex;
+  justify-content: space-between;
+  z-index: 2;
+}
+
+.koala-eye {
+  width: 11px;
+  height: 14px;
+  border-radius: 50%;
+  background: #1f2937;
+  position: relative;
+  transition: all 0.28s ease;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.koala-eye::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.koala.password-mode .koala-eye {
+  height: 3px;
+  border-radius: 999px;
+  margin-top: 5px;
+}
+
+.koala.password-mode .koala-eye::after {
+  opacity: 0;
+}
+
+.koala.show-mode .koala-eye {
+  transform: scale(1.08);
+}
+
+.koala-nose {
+  position: absolute;
+  top: 52px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 28px;
+  height: 22px;
+  border-radius: 48% 48% 58% 58%;
+  background: linear-gradient(180deg, #2b3138 0%, #111827 100%);
+  z-index: 3;
+  box-shadow: inset 0 2px 2px rgba(255, 255, 255, 0.12);
+}
+
+.koala-mouth {
+  position: absolute;
+  top: 77px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 24px;
+  height: 10px;
+  border-bottom: 3px solid rgba(31, 41, 55, 0.88);
+  border-radius: 0 0 20px 20px;
+  z-index: 3;
+}
+
+.koala-hand {
+  position: absolute;
+  top: 68px;
+  width: 32px;
+  height: 32px;
+  border-radius: 48%;
+  background: linear-gradient(180deg, #adb4bc 0%, #8c949d 100%);
+  z-index: 4;
+  transition:
+    transform 0.32s ease,
+    top 0.32s ease,
+    left 0.32s ease,
+    right 0.32s ease;
+  box-shadow: inset 0 -3px 6px rgba(0, 0, 0, 0.12);
+}
+
+.koala-hand-left {
+  left: 12px;
+  transform: rotate(16deg);
+}
+
+.koala-hand-right {
+  right: 12px;
+  transform: rotate(-16deg);
+}
+
+.koala.password-mode .koala-hand-left {
+  top: 36px;
+  left: 21px;
+  transform: rotate(-18deg);
+}
+
+.koala.password-mode .koala-hand-right {
+  top: 36px;
+  right: 21px;
+  transform: rotate(18deg);
+}
+
+.koala.show-mode .koala-hand-left,
+.koala.show-mode .koala-hand-right {
+  top: 70px;
+}
+
+.koala.error-mode {
+  animation: koalaShake 0.45s ease;
+}
+
+@keyframes koalaShake {
+  0% { transform: translateX(0); }
+  20% { transform: translateX(-4px); }
+  40% { transform: translateX(4px); }
+  60% { transform: translateX(-3px); }
+  80% { transform: translateX(3px); }
+  100% { transform: translateX(0); }
+}
+
+/* BRAND BLOCK */
+.login-brand-block {
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.login-brand-badge {
+  display: inline-block;
+  padding: 7px 14px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 800;
+  background: linear-gradient(135deg, #7c3aed, #ec4899);
+  color: #fff;
+  margin-bottom: 10px;
+  line-height: 1.4;
+  box-shadow: 0 10px 24px rgba(124, 58, 237, 0.22);
+}
+
+.login-brand-block .title {
+  font-size: 28px;
+  font-weight: 900;
+  letter-spacing: 0;
+  line-height: 1.5;
+  text-align: center;
+  margin-bottom: 0;
+}
+
+/* FORM */
+.login-form {
+  margin-top: 6px;
+}
+
+.login-field + .login-field {
+  margin-top: 12px;
+}
+
+.login-page-card .form {
+  direction: rtl;
+  text-align: right;
+}
+
+.login-page-card .label {
+  text-align: right;
+  direction: rtl;
+  line-height: 1.8;
+  margin-bottom: 6px;
+}
+
+.login-page-card .input {
+  direction: rtl;
+  text-align: right;
+}
+
+.login-page-card .input[type="email"],
+.login-page-card .input[dir="ltr"] {
+  direction: ltr;
+  text-align: left;
+}
+
+.login-page-card .input::placeholder {
+  line-height: 1.6;
+}
+
+.login-password-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.login-password-wrap .input {
+  width: 100%;
+  direction: ltr;
+  text-align: left;
+  padding-right: 58px;
+  padding-left: 14px;
+}
+
+.login-password-emoji {
+  position: absolute;
+  right: 8px;
+  left: auto;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 38px;
+  height: 38px;
+  border: none;
+  border-radius: 12px;
+  background: rgba(79, 124, 255, 0.1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+  z-index: 2;
+}
+
+.login-password-emoji:hover {
+  background: rgba(79, 124, 255, 0.16);
+  box-shadow: 0 4px 12px rgba(79, 124, 255, 0.12);
+}
+
+.login-password-emoji:active {
+  transform: translateY(-50%) scale(0.96);
+}
+
+.login-password-emoji:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* ACTIONS */
+.login-form-actions {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.login-form-actions .btn {
+  width: 100%;
+  justify-content: center;
+  text-align: center;
+}
+
+.login-page-card .input:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.login-page-card .btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* ALERT */
+.login-page-card .alert {
+  margin-top: 12px;
+  direction: rtl;
+  text-align: right;
+  line-height: 1.9;
+  word-break: break-word;
+  border-radius: 16px;
+  padding: 12px 14px;
+  font-weight: 700;
+}
+
+/* EXTRA POLISH */
+.login-page-card::before {
+  content: "";
+  position: absolute;
+  top: -40%;
+  left: -40%;
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle, rgba(236, 72, 153, 0.25), transparent 70%);
+  z-index: 0;
+}
+
+.login-page-card::after {
+  content: "";
+  position: absolute;
+  bottom: -40%;
+  right: -40%;
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle, rgba(124, 58, 237, 0.25), transparent 70%);
+  z-index: 0;
+}
+
+.login-page-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* TABLET */
+@media (max-width: 640px) {
+  .login-page-card {
+    width: 100%;
+    padding: 20px 16px 16px;
+    border-radius: 18px;
+  }
+
+  .login-koala-block {
+    margin-bottom: 12px;
+  }
+
+  .koala {
+    width: 136px;
+    height: 136px;
+  }
+
+  .koala-face {
+    width: 106px;
+    height: 106px;
+  }
+
+  .koala-eyes {
+    top: 34px;
+    width: 54px;
+  }
+
+  .koala-nose {
+    top: 47px;
+  }
+
+  .koala-mouth {
+    top: 70px;
+  }
+
+  .koala-hand {
+    width: 30px;
+    height: 30px;
+    top: 62px;
+  }
+
+  .koala.password-mode .koala-hand-left {
+    top: 33px;
+    left: 18px;
+  }
+
+  .koala.password-mode .koala-hand-right {
+    top: 33px;
+    right: 18px;
+  }
+}
+
+/* MOBILE */
+@media (max-width: 480px) {
+  .login-page-card {
+    width: 100%;
+    padding: 16px 14px 14px;
+    border-radius: 16px;
+  }
+
+  .login-koala-block {
+    margin-bottom: 10px;
+  }
+
+  .koala {
+    width: 118px;
+    height: 118px;
+  }
+
+  .koala-ear {
+    width: 40px;
+    height: 40px;
+    top: 8px;
+  }
+
+  .koala-ear::after {
+    inset: 9px;
+  }
+
+  .koala-ear-left {
+    left: 10px;
+  }
+
+  .koala-ear-right {
+    right: 10px;
+  }
+
+  .koala-face {
+    width: 92px;
+    height: 92px;
+    bottom: 2px;
+  }
+
+  .koala-face::after {
+    width: 58px;
+    height: 38px;
+    top: 57%;
+  }
+
+  .koala-eyes {
+    top: 28px;
+    width: 46px;
+  }
+
+  .koala-eye {
+    width: 9px;
+    height: 11px;
+  }
+
+  .koala.password-mode .koala-eye {
+    height: 3px;
+    margin-top: 4px;
+  }
+
+  .koala-nose {
+    top: 40px;
+    width: 22px;
+    height: 17px;
+  }
+
+  .koala-mouth {
+    top: 58px;
+    width: 18px;
+    height: 8px;
+    border-bottom-width: 2px;
+  }
+
+  .koala-hand {
+    width: 24px;
+    height: 24px;
+    top: 54px;
+  }
+
+  .koala-hand-left {
+    left: 9px;
+  }
+
+  .koala-hand-right {
+    right: 9px;
+  }
+
+  .koala.password-mode .koala-hand-left {
+    top: 29px;
+    left: 16px;
+  }
+
+  .koala.password-mode .koala-hand-right {
+    top: 29px;
+    right: 16px;
+  }
+
+  .login-brand-block {
+    margin-bottom: 12px;
+  }
+
+  .login-brand-badge {
+    font-size: 11px;
+    padding: 6px 12px;
+    margin-bottom: 8px;
+  }
+
+  .login-brand-block .title {
+    font-size: 22px;
+    line-height: 1.55;
+  }
+
+  .login-subtitle {
+    font-size: 13px;
+    line-height: 1.8;
+  }
+
+  .login-page-card .label {
+    font-size: 12.5px;
+    line-height: 1.8;
+  }
+
+  .login-page-card .input {
+    font-size: 16px;
+    min-height: 44px;
+  }
+
+  .login-password-wrap .input {
+    padding-right: 52px;
+    padding-left: 12px;
+  }
+
+  .login-password-emoji {
+    right: 6px;
+    left: auto;
+    width: 34px;
+    height: 34px;
+    font-size: 18px;
+    border-radius: 10px;
+  }
+
+  .login-page-card .alert {
+    font-size: 13px;
+    line-height: 1.9;
+  }
+
+  .login-form-actions {
+    gap: 8px;
+    margin-top: 10px;
+  }
+}
